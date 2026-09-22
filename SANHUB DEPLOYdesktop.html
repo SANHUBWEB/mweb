@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANHUB DEPLOY</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0d1117;--card:#161b22;--card2:#1c2128;--border:#30363d;--text:#c9d1d9;
+  --muted:#8b949e;--white:#f0f6fc;--green:#238636;--green-h:#2ea043;
+  --blue:#58a6ff;--red:#da3633;--yellow:#d29922;--shell:#000;
+  --purple:#a371f7;--pink:#ff6bb3;--teal:#39d0c4;--orange:#ff9f43;
+  --grad1:linear-gradient(135deg,#7c5cff,#ff6bb3);
+  --grad2:linear-gradient(135deg,#39d0c4,#58a6ff);
+  --grad3:linear-gradient(135deg,#ff9f43,#ff6bb3);
+  --grad4:linear-gradient(135deg,#2ea043,#39d0c4);
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fa;--card:#ffffff;--card2:#f0f2f5;--border:#d0d7de;--text:#24292f;
+  --muted:#57606a;--white:#0d1117;--green:#238636;--green-h:#2ea043;
+  --blue:#0969da;--red:#cf222e;--yellow:#9a6700;--shell:#e8eaed;
+  --purple:#8250df;--pink:#e85aa0;--teal:#1a9f92;--orange:#e8730a;
+  --grad1:linear-gradient(135deg,#6c47ff,#e85aa0);
+  --grad2:linear-gradient(135deg,#1a9f92,#0969da);
+  --grad3:linear-gradient(135deg,#e8730a,#e85aa0);
+  --grad4:linear-gradient(135deg,#238636,#1a9f92);
+}
+*{-webkit-tap-highlight-color:transparent;}
+.btn,.nav-btn,.tpl-use,.chip,.copy-mini,.theme-btn,.switch,.use-repo,.del-repo,.tool-use{transition:transform .12s ease,box-shadow .12s ease,background .15s ease,border-color .15s ease,opacity .15s ease;}
+.btn:active,.tpl-use:active,.copy-mini:active,.theme-btn:active{transform:scale(.95);}
+.nav-btn:active{transform:scale(.93);}
+.card,.tool-card,.tpl-card,.site-card,.status-card{animation:cardIn .35s ease both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;}
+body{background:var(--shell);min-height:100vh;display:flex;color:var(--text);}
+.phone{
+  width:100%;height:100vh;min-height:640px;background:var(--bg);
+  overflow:hidden;position:relative;display:grid;grid-template-columns:250px 1fr;
+  color:var(--text);
+}
+.app-bar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px 12px;border-bottom:1px solid var(--border);background:var(--card);
+}
+.app-bar h1{font-size:16px;color:var(--white);display:flex;align-items:center;gap:8px;}
+.theme-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  width:34px;height:34px;font-size:15px;cursor:pointer;color:var(--text);
+}
+.content{flex:1;overflow-y:auto;padding:16px 16px 90px;}
+.tab{display:none;}
+.tab.active{display:block;animation:fadein .2s;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+
+.bottom-nav{
+  position:absolute;bottom:0;left:0;right:0;display:flex;background:var(--card);
+  border-top:1px solid var(--border);padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+.nav-btn{
+  flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;
+  gap:3px;padding:6px 2px;cursor:pointer;color:var(--muted);font-size:10px;font-weight:600;
+  border-radius:10px;transition:.15s;
+}
+.nav-btn .ic{font-size:18px;}
+.nav-btn.active{color:var(--green-h);background:rgba(35,134,54,.12);}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card h2{font-size:13.5px;color:var(--white);margin-bottom:10px;font-weight:600;display:flex;align-items:center;gap:7px;}
+label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+input[type=text],input[type=password],textarea{
+  width:100%;padding:9px 11px;border-radius:8px;background:var(--bg);
+  border:1px solid var(--border);color:var(--white);font-size:13.5px;outline:none;
+  margin-bottom:12px;font-family:inherit;
+}
+textarea{font-family:ui-monospace,Consolas,monospace;font-size:12px;min-height:140px;resize:vertical;line-height:1.5;}
+input:focus,textarea:focus{border-color:var(--blue);}
+.row{display:flex;gap:8px;}
+.row>div{flex:1;min-width:0;}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.chip{
+  background:var(--card2);border:1px solid var(--border);border-radius:99px;
+  padding:5px 10px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--text);
+}
+.chip.active{background:rgba(35,134,54,.18);border-color:var(--green-h);color:var(--green-h);}
+.chip .x{opacity:.6;font-weight:700;}
+.chip .x:hover{opacity:1;color:var(--red);}
+.chip.add{color:var(--blue);border-style:dashed;}
+
+.file-drop{
+  border:1.5px dashed var(--border);border-radius:10px;padding:12px;text-align:center;
+  margin-bottom:12px;cursor:pointer;background:var(--bg);font-size:11.5px;color:var(--muted);
+}
+.file-drop.drag{border-color:var(--green-h);background:rgba(35,134,54,.08);}
+.file-drop b{color:var(--blue);}
+#fileInput{display:none;}
+
+.btn{border:none;cursor:pointer;border-radius:9px;font-size:13px;font-weight:600;padding:10px 14px;transition:.15s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-green{background:var(--green);color:#fff;width:100%;}
+.btn-green:hover{background:var(--green-h);}
+.btn-green:disabled{background:#484f58;color:#9198a1;cursor:not-allowed;}
+.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border);flex:1;}
+.btn-ghost:hover{border-color:var(--blue);}
+.btn-red{background:rgba(218,54,51,.15);color:var(--red);border:1px solid rgba(218,54,51,.4);flex:1;}
+.btn-red:hover{background:rgba(218,54,51,.25);}
+.btn-row{display:flex;gap:8px;}
+
+.tip{font-size:11px;line-height:1.55;background:rgba(56,139,253,.09);border-left:3px solid var(--blue);padding:8px 10px;border-radius:0 6px 6px 0;color:var(--blue);margin-bottom:12px;}
+.tip.warn{background:rgba(210,153,34,.1);border-left-color:var(--yellow);color:var(--yellow);}
+a{color:var(--blue);}
+
+.log{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:ui-monospace,Consolas,monospace;font-size:11px;max-height:170px;overflow-y:auto;margin-top:4px;display:none;}
+.log.show{display:block;}
+.log div{padding:2px 0;}
+.log .ok{color:var(--green-h);}.log .err{color:var(--red);}.log .info{color:var(--muted);}
+
+.status-card{display:none;border:1px solid rgba(63,185,80,.45);background:linear-gradient(180deg, rgba(35,134,54,.14), var(--card));border-radius:14px;padding:16px;margin-bottom:14px;}
+.status-card.show{display:block;}
+.url-out{padding:10px 12px;border-radius:9px;background:var(--bg);border:1px dashed var(--border);display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;}
+.url-out code{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:var(--green-h);word-break:break-all;flex:1;min-width:140px;}
+.copy-mini{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 9px;font-size:10.5px;cursor:pointer;}
+.build-status{font-size:11.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.open-btn{display:block;text-align:center;background:var(--blue);color:#fff;padding:9px;border-radius:8px;text-decoration:none;font-weight:600;font-size:12.5px;margin-bottom:10px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;}
+.toggle-info b{font-size:12px;color:var(--white);display:block;}
+.toggle-info span{font-size:10.5px;color:var(--muted);}
+.switch{position:relative;width:42px;height:24px;flex:0 0 42px;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:#30363d;border-radius:99px;transition:.2s;}
+.slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#8b949e;border-radius:50%;transition:.2s;}
+.switch input:checked+.slider{background:var(--green);}
+.switch input:checked+.slider:before{transform:translateX(18px);background:#fff;}
+.pub-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px;}
+.pub-badge.on{background:rgba(35,134,54,.2);color:var(--green-h);}
+.pub-badge.off{background:rgba(218,54,51,.15);color:#ff7b72;}
+
+.tpl-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;gap:10px;align-items:center;}
+.tpl-icon{font-size:26px;flex:0 0 auto;}
+.tpl-body{flex:1;min-width:0;}
+.tpl-body h3{font-size:13px;color:var(--white);margin-bottom:2px;}
+.tpl-body p{font-size:11px;color:var(--muted);}
+.tpl-use{background:var(--green);color:#fff;border:none;border-radius:7px;padding:7px 11px;font-size:11.5px;font-weight:600;cursor:pointer;flex:0 0 auto;}
+
+.site-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;}
+.site-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.site-top b{font-size:13px;color:var(--white);}
+.badge-sm{font-size:9.5px;padding:2px 7px;border-radius:99px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
+.badge-sm.live{color:var(--green-h);border-color:rgba(35,134,54,.5);}
+
+.hist-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hist-ic{font-size:16px;}
+.hist-body b{font-size:12.5px;color:var(--white);display:block;}
+.hist-body span{font-size:10.5px;color:var(--muted);}
+.empty-note{text-align:center;color:var(--muted);font-size:12px;padding:24px 10px;}
+
+.preview-frame{width:100%;height:220px;border:1px solid var(--border);border-radius:10px;margin-top:8px;background:#fff;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* ===== MODERN DESKTOP UX/UI ===== */
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.brand-text{min-width:0;}
+.brand-text h1{font-size:14px;color:var(--white);font-weight:800;letter-spacing:.2px;white-space:nowrap;}
+.brand-sub{display:none;font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;letter-spacing:.2px;}
+
+@media (min-width:801px){
+  .phone{grid-template-columns:250px 1fr;grid-template-rows:auto 1fr;}
+  .app-bar{
+    grid-column:1;grid-row:1;display:flex;flex-direction:column;align-items:stretch;
+    justify-content:flex-start;padding:22px 16px;background:linear-gradient(180deg,var(--card),var(--bg));
+    border-right:1px solid var(--border);border-bottom:0;z-index:5;position:relative;overflow:hidden;
+  }
+  .app-bar::before{
+    content:"";position:absolute;top:-60px;left:-60px;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle,rgba(46,160,67,.16),transparent 70%);pointer-events:none;
+    animation:blobFloat 9s ease-in-out infinite;
+  }
+  .brand-badge{width:34px;height:34px;font-size:17px;flex:0 0 auto;}
+  .brand-text h1{font-size:15px;white-space:normal;}
+  .brand-sub{display:block;}
+  .bottom-nav{
+    grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:4px;background:linear-gradient(180deg,var(--card),var(--bg));
+    border:0;border-right:1px solid var(--border);
+    padding:14px 8px 16px;position:relative;overflow-y:auto;
+  }
+  .nav-btn{
+    flex:0 0 auto;width:100%;flex-direction:row;justify-content:flex-start;gap:12px;
+    padding:11px 13px;color:var(--muted);font-size:12.5px;font-weight:650;border-radius:11px;
+    text-align:left;transition:transform .15s,background .15s,color .15s,box-shadow .2s;position:relative;
+  }
+  .nav-btn .ic{font-size:17px;width:20px;text-align:center;}
+  .nav-btn:hover{background:var(--card2);color:var(--white);transform:translateX(3px);}
+  .nav-btn.active{color:var(--green-h);background:rgba(35,134,54,.13);box-shadow:inset 3px 0 0 var(--green-h);}
+  .content{grid-column:2;grid-row:1/3;overflow-y:auto;padding:30px 36px 48px;position:relative;
+    background:
+      radial-gradient(circle at 88% 0%, rgba(88,166,255,.06), transparent 26%),
+      radial-gradient(circle at 12% 0%, rgba(46,160,67,.04), transparent 22%),
+      var(--bg);
+  }
+  .tab{display:none;max-width:1180px;margin:0 auto;}
+  .tab.active{display:block;animation:tabSlide .32s cubic-bezier(.16,1,.3,1) both;}
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.018),transparent),var(--card);
+    border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.10);
+  }
+  .card:hover{border-color:rgba(88,166,255,.35);}
+  .card h2{font-size:15px;margin-bottom:14px;}
+  .row{gap:14px;}
+  input[type=text],input[type=password],textarea{
+    padding:11px 13px;border-radius:10px;font-size:13.5px;transition:border-color .15s,box-shadow .15s;
+  }
+  input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,.10);}
+  textarea{min-height:320px;}
+  .file-drop{padding:18px;border-radius:12px;margin-bottom:14px;background:rgba(0,0,0,.06);transition:.2s;}
+  .file-drop:hover{border-color:var(--blue);}
+  .btn{border-radius:10px;padding:11px 15px;}
+  .btn-green{box-shadow:0 8px 18px rgba(35,134,54,.18);}
+  .btn-green:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(35,134,54,.26);}
+  .status-card{border-radius:18px;padding:20px;box-shadow:0 12px 35px rgba(35,134,54,.08);}
+  .tpl-card,.site-card{border-radius:15px;padding:15px;box-shadow:0 7px 22px rgba(0,0,0,.07);transition:transform .15s,border-color .15s,box-shadow .2s;}
+  .tpl-card:hover,.site-card:hover{transform:translateY(-3px);border-color:var(--blue);box-shadow:0 14px 30px rgba(0,0,0,.14);}
+  .preview-frame{height:380px;border-radius:14px;}
+  .log{max-height:220px;border-radius:12px;}
+  .hist-item{padding:13px 4px;}
+  .empty-note{padding:42px 10px;}
+
+  /* Home dashboard two-pane layout */
+  .home-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+  .home-main{min-width:0;}
+  .guide-card{background:linear-gradient(160deg,rgba(88,166,255,.08),var(--card));}
+  .guide-step{display:flex;gap:11px;align-items:flex-start;margin-bottom:13px;}
+  .guide-step:last-child{margin-bottom:0;}
+  .guide-step .g-num{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--grad2);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .guide-step b{display:block;font-size:12px;color:var(--white);margin-bottom:2px;}
+  .guide-step span{font-size:11px;color:var(--muted);line-height:1.4;}
+  #tab-home::after{
+    content:"Desktop workspace • Auto-saved locally • Live preview";
+    display:block;color:var(--muted);font-size:10px;text-align:center;margin-top:4px;
+  }
+}
+@keyframes blobFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(14px,18px);}}
+@media (min-width:1100px){
+  .home-grid{grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);align-items:start;}
+  .home-side{position:sticky;top:0;}
+}
+@media (max-width:800px){
+  body{padding:0;}
+  .phone{display:flex;flex-direction:column;height:100vh;border-radius:0;}
+  .app-bar{display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+    padding:14px 16px;border-right:0;border-bottom:1px solid var(--border);min-height:62px;}
+  .brand-text h1{font-size:16px;}
+  .theme-btn{width:36px;height:36px;}
+  .content{padding:16px 14px 88px;}
+  .bottom-nav{
+    position:absolute;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;
+    flex-direction:row;gap:0;background:var(--card);border-top:1px solid var(--border);
+    padding:7px 4px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -8px 25px rgba(0,0,0,.12);
+  }
+  .nav-btn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 2px;
+    font-size:9px;text-align:center;}
+  .nav-btn .ic{font-size:18px;width:auto;}
+  .nav-btn.active{box-shadow:none;}
+  .card{padding:16px;border-radius:14px;}
+  textarea{min-height:220px;}
+  .preview-frame{height:300px;}
+}
+@media (min-width:801px) and (max-width:1050px){
+  .phone{grid-template-columns:210px 1fr;}
+  .content{padding:22px;}
+}
+
+
+/* ===== PROFESSIONAL TOOLKIT UI ===== */
+.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
+.tool-card{background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.10);transition:.2s}
+.tool-card:hover{transform:translateY(-2px);border-color:var(--blue)}
+.tool-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tool-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(88,166,255,.10);font-size:22px}
+.tool-card h3{font-size:15px;color:var(--white);margin:0}
+.tool-card p{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.45}
+.tool-output{margin-top:14px;padding:14px;border:1px dashed var(--border);border-radius:13px;background:var(--bg);display:none}
+.tool-output.show{display:block}
+.qr-wrap{text-align:center}
+.qr-wrap img{width:180px;height:180px;border-radius:10px;background:#fff;padding:8px;display:block;margin:8px auto 12px}
+.token-value{font-family:ui-monospace,Consolas,monospace;font-size:20px;letter-spacing:2px;color:var(--green-h);text-align:center;padding:13px;border-radius:10px;background:var(--card2);border:1px solid var(--border);word-break:break-all}
+.small-note{font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:8px}
+@media(max-width:800px){.tool-grid{grid-template-columns:1fr}.tool-card{padding:16px}}
+
+
+/* Professional editor + preview workspace */
+.workspace-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.9fr);gap:18px;margin-top:18px}
+.workspace-card{background:var(--card,#fff);border:1px solid rgba(100,116,139,.18);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.06)}
+.workspace-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(100,116,139,.14)}
+.workspace-title{display:flex;align-items:center;gap:9px;font-weight:800}
+.workspace-actions{display:flex;gap:8px;flex-wrap:wrap}
+.workspace-actions button{border:0;border-radius:10px;padding:8px 11px;font-weight:700;cursor:pointer}
+.btn-preview{background:#2563eb;color:#fff}.btn-clear{background:#fee2e2;color:#b91c1c}
+.code-editor-wrap{position:relative;background:#0b1220}
+#codeEditor{display:block;width:100%;min-height:420px;resize:vertical;border:0;outline:0;background:#0b1220;color:#e5e7eb;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.preview-frame-wrap{padding:12px;background:#f1f5f9;min-height:444px}
+#previewFrame{width:100%;height:420px;border:0;border-radius:12px;background:#fff;display:block}
+.empty-preview{height:420px;display:flex;align-items:center;justify-content:center;text-align:center;color:#64748b;background:#fff;border:2px dashed #cbd5e1;border-radius:12px;padding:24px}
+.empty-preview .empty-icon{font-size:42px;margin-bottom:10px}
+.editor-hint{padding:10px 16px;font-size:12px;color:#64748b;border-top:1px solid rgba(100,116,139,.14)}
+[data-theme="dark"] .workspace-card{background:#111827;border-color:rgba(148,163,184,.18)}
+[data-theme="dark"] .preview-frame-wrap{background:#0f172a}
+[data-theme="dark"] .empty-preview{background:#111827;border-color:#334155;color:#94a3b8}
+[data-theme="dark"] .editor-hint{color:#94a3b8}
+@media(max-width:900px){.workspace-grid{grid-template-columns:1fr}.preview-frame-wrap,#previewFrame,.empty-preview{min-height:360px;height:360px}}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast-stack{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:320px;}
+.toast{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:12px;padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.22);font-size:12.5px;color:var(--text);display:flex;align-items:flex-start;gap:9px;animation:toastIn .25s ease;}
+.toast.ok{border-left-color:var(--green-h);}
+.toast.err{border-left-color:var(--red);}
+.toast .t-ic{font-size:16px;flex:0 0 auto;line-height:1.3;}
+.toast .t-msg{flex:1;line-height:1.45;}
+.toast.leaving{animation:toastOut .2s ease forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(24px) scale(.96);}to{opacity:1;transform:translateX(0) scale(1);}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(24px);}}
+@media(max-width:800px){.toast-stack{left:12px;right:12px;top:12px;max-width:none;}}
+
+/* ===== CONFETTI ===== */
+.confetti-piece{position:fixed;top:-12px;width:8px;height:14px;z-index:9998;pointer-events:none;opacity:.9;border-radius:2px;animation:confettiFall linear forwards;}
+@keyframes confettiFall{to{transform:translateY(105vh) rotate(600deg);opacity:0;}}
+
+/* ===== DEPLOY STEPPER ===== */
+.stepper{display:flex;justify-content:space-between;gap:4px;margin-bottom:14px;}
+.step{flex:1;text-align:center;position:relative;}
+.step .dot{width:26px;height:26px;border-radius:50%;background:var(--card2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);margin:0 auto 6px;transition:.25s;}
+.step .lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.step::after{content:"";position:absolute;top:13px;left:50%;width:100%;height:2px;background:var(--border);z-index:-1;}
+.step:last-child::after{display:none;}
+.step.done .dot{background:var(--green);border-color:var(--green);color:#fff;}
+.step.done::after{background:var(--green);}
+.step.active .dot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(88,166,255,.18);}
+.step.err .dot{background:var(--red);border-color:var(--red);color:#fff;}
+
+/* ===== EMPTY STATES ===== */
+.empty-note{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.empty-note .e-ic{font-size:30px;opacity:.6;}
+
+/* ===== LOGO MARK ===== */
+.brand-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--green-h),var(--blue));font-size:15px;margin-right:2px;box-shadow:0 4px 12px rgba(35,134,54,.35);}
+
+/* ===== PROGRESS BAR (animated % deploy indicator) ===== */
+.progress-wrap{display:none;margin-bottom:14px;}
+.progress-wrap.show{display:block;animation:cardIn .3s ease both;}
+.progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.progress-top .p-text{font-size:11.5px;color:var(--muted);font-weight:600;}
+.progress-top .p-pct{font-size:15px;font-weight:800;background:var(--grad1);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+.progress-track{width:100%;height:10px;border-radius:99px;background:var(--card2);border:1px solid var(--border);overflow:hidden;position:relative;}
+.progress-fill{height:100%;width:0%;border-radius:99px;background:var(--grad1);background-size:200% 100%;transition:width .5s cubic-bezier(.4,0,.2,1);position:relative;animation:gradientMove 2s linear infinite;}
+.progress-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 1.3s linear infinite;}
+@keyframes shimmer{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+@keyframes gradientMove{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+.progress-fill.err{background:var(--red);animation:none;}
+.progress-fill.err::after{display:none;}
+
+/* ===== HOSTING STAT TILES ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:4px;}
+.stat-tile{border-radius:16px;padding:16px 14px;color:#fff;position:relative;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.15);}
+.stat-tile.g1{background:var(--grad1);}.stat-tile.g2{background:var(--grad2);}
+.stat-tile.g3{background:var(--grad3);}.stat-tile.g4{background:var(--grad4);}
+.stat-tile .s-ic{font-size:20px;opacity:.9;}
+.stat-tile .s-num{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:.3px;}
+.stat-tile .s-lbl{font-size:10.5px;opacity:.92;font-weight:600;margin-top:2px;}
+.conn-row{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:14px;}
+.conn-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:0 0 auto;}
+.conn-dot.on{background:var(--green-h);box-shadow:0 0 0 4px rgba(46,160,67,.18);animation:pulseDot 1.8s ease-in-out infinite;}
+.conn-dot.busy{background:var(--yellow);box-shadow:0 0 0 4px rgba(210,153,34,.18);animation:pulseDotY 1s ease-in-out infinite;}
+.conn-dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(218,54,51,.18);animation:pulseDotR 1.8s ease-in-out infinite;}
+@keyframes pulseDotY{0%,100%{box-shadow:0 0 0 0 rgba(210,153,34,.35);}50%{box-shadow:0 0 0 5px rgba(210,153,34,0);}}
+@keyframes pulseDotR{0%,100%{box-shadow:0 0 0 0 rgba(218,54,51,.35);}50%{box-shadow:0 0 0 5px rgba(218,54,51,0);}}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(46,160,67,.35);}50%{box-shadow:0 0 0 6px rgba(46,160,67,0);}}
+.conn-row b{font-size:12.5px;color:var(--white);display:block;}
+.conn-row span{font-size:10.5px;color:var(--muted);}
+
+/* ===== SITE CARD (revamped) ===== */
+.site-card{padding:13px 14px;}
+.site-top{margin-bottom:9px;}
+.site-name-wrap{display:flex;align-items:center;gap:7px;min-width:0;}
+.site-name-wrap b{font-size:13px;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;}
+.site-badges{display:flex;gap:5px;flex-shrink:0;}
+.site-link-row{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:6px 8px;margin-bottom:9px;}
+.site-link-row code{font-size:10px;color:var(--blue);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mini-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;flex:0 0 auto;font-weight:600;}
+.mini-btn:hover{border-color:var(--blue);}
+.site-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.site-toggle-mini{display:flex;align-items:center;gap:7px;}
+.site-toggle-mini span{font-size:9.5px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.switch.sm{width:34px;height:20px;flex:0 0 34px;}
+.switch.sm .slider:before{height:14px;width:14px;left:3px;bottom:3px;}
+.switch.sm input:checked+.slider:before{transform:translateX(14px);}
+.site-mini-actions{display:flex;gap:5px;}
+.site-qr-inline{display:none;text-align:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
+.site-qr-inline.show{display:block;animation:cardIn .25s ease both;}
+.site-qr-inline img{width:110px;height:110px;border-radius:8px;background:#fff;padding:6px;}
+
+/* ===== WEBSITE NOTES (numbered) ===== */
+.note-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.note-input-row input{margin-bottom:0;flex:1;min-width:0;}
+.note-input-row button{width:auto;flex:0 0 auto;}
+.note-list{list-style:none;counter-reset:notecount;}
+.note-item{counter-increment:notecount;display:flex;align-items:flex-start;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:8px;}
+.note-item .n-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--grad1);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.note-item .n-txt{flex:1;font-size:12.5px;color:var(--text);line-height:1.5;word-break:break-word;padding-top:2px;}
+.note-item .n-del{flex:0 0 auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;}
+.note-item .n-del:hover{color:var(--red);}
+
+/* ===== TAB SLIDE ANIMATION ===== */
+.tab.active{animation:tabSlide .28s cubic-bezier(.16,1,.3,1) both;}
+@keyframes tabSlide{from{opacity:0;transform:translateY(10px) scale(.99);}to{opacity:1;transform:translateY(0) scale(1);}}
+.nav-btn.active .ic{animation:iconPop .3s ease;}
+@keyframes iconPop{0%{transform:scale(1);}45%{transform:scale(1.28);}100%{transform:scale(1);}}
+
+/* ===== TRAFFIC-LIGHT SIGNAL DOTS ===== */
+.signal-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto;}
+.signal-dot.green{background:var(--green-h);animation:sigGreen 1.7s ease-in-out infinite;}
+.signal-dot.yellow{background:var(--yellow);animation:sigYellow 1s ease-in-out infinite;}
+.signal-dot.red{background:var(--red);animation:sigRed 1.7s ease-in-out infinite;}
+.signal-dot.grey{background:var(--muted);}
+@keyframes sigGreen{0%{box-shadow:0 0 0 0 rgba(46,160,67,.55);}70%{box-shadow:0 0 0 7px rgba(46,160,67,0);}100%{box-shadow:0 0 0 0 rgba(46,160,67,0);}}
+@keyframes sigYellow{0%{box-shadow:0 0 0 0 rgba(210,153,34,.55);}70%{box-shadow:0 0 0 6px rgba(210,153,34,0);}100%{box-shadow:0 0 0 0 rgba(210,153,34,0);}}
+@keyframes sigRed{0%{box-shadow:0 0 0 0 rgba(218,54,51,.55);}70%{box-shadow:0 0 0 7px rgba(218,54,51,0);}100%{box-shadow:0 0 0 0 rgba(218,54,51,0);}}
+.signal{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;}
+
+/* ===== PUBLIC/PRIVATE VISIBILITY BUTTONS ===== */
+.vis-btn-row{display:flex;gap:8px;margin-bottom:14px;}
+.vis-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border-radius:11px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.vis-btn.active{border-color:var(--blue);background:rgba(88,166,255,.13);color:var(--white);box-shadow:0 0 0 1px var(--blue) inset;}
+.vis-btn:disabled{opacity:.55;cursor:not-allowed;}
+
+/* ===== HOSTING SITE LIST ===== */
+.host-site{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:12px 13px;margin-bottom:10px;}
+.host-site-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.host-site-top b{font-size:12.5px;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;}
+.host-site-actions{display:flex;gap:6px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+<div class="toast-stack" id="toastStack"></div>
+<div class="phone">
+  <div class="app-bar">
+    <div class="brand-row">
+      <div class="brand"><span class="brand-badge">🚀</span><div class="brand-text"><h1>SANHUB DEPLOY</h1><p class="brand-sub">Website Deployment Studio</p></div></div>
+      <button class="theme-btn" id="themeBtn">🌙</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HOME TAB -->
+    <div class="tab active" id="tab-home"><div style="margin-bottom:18px;"><div style="font-size:11px;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:1px;">Dashboard</div><div style="font-size:27px;font-weight:750;color:var(--white);margin-top:5px;">Deploy your website</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">GitHub Pages deployment ko simple aur fast rakho.</div></div>
+      <div class="home-grid">
+      <div class="home-main">
+      <div class="card">
+        <h2>📦 Repository</h2>
+        <label>Website Name</label>
+        <input type="text" id="repoName" value="my-website" style="margin-bottom:12px;">
+        <div class="toggle-row">
+          <div class="toggle-info"><b>Visibility</b><span id="visibilityDesc">Public — sabko dikhegi</span></div>
+          <label class="switch"><input type="checkbox" id="repoPrivateToggle"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📝 Files</h2>
+        <div class="chip-row" id="chipRow"></div>
+        <div class="file-drop" id="fileDrop">
+          📎 Files <b>drag & drop</b> karo (html/css/js/images) ya click karo
+          <input type="file" id="fileInput" multiple>
+        </div>
+        <textarea id="siteCode" spellcheck="false"></textarea>
+        <div class="btn-row" style="margin-bottom:10px;">
+          <button class="btn btn-ghost" id="loadBtn">🔄 Load Existing</button>
+          <button class="btn btn-ghost" id="previewBtn">👁 Preview</button>
+          <button class="btn btn-red" id="clearCodeBtn">🗑 Clear Code</button>
+        </div>
+        <iframe class="preview-frame" id="previewFrame" style="display:none;"></iframe>
+      </div>
+
+      <button class="btn btn-green" id="deployBtn" style="margin-bottom:12px;">⚡ Deploy / Update Website</button>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-top"><span class="p-text" id="progressText">Starting…</span><span class="p-pct" id="progressPct">0%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="stepper" id="deployStepper" style="display:none;">
+        <div class="step" data-step="account"><div class="dot">1</div><div class="lbl">Login</div></div>
+        <div class="step" data-step="repo"><div class="dot">2</div><div class="lbl">Repo</div></div>
+        <div class="step" data-step="files"><div class="dot">3</div><div class="lbl">Files</div></div>
+        <div class="step" data-step="pages"><div class="dot">4</div><div class="lbl">Pages</div></div>
+        <div class="step" data-step="live"><div class="dot">5</div><div class="lbl">Live</div></div>
+      </div>
+      <div class="log" id="log"></div>
+      </div>
+
+      <aside class="home-side">
+      <div class="card guide-card">
+        <h2>✨ Quick Guide</h2>
+        <div class="guide-step"><span class="g-num">1</span><div><b>Token daalo</b><span>Settings tab me GitHub token save karo</span></div></div>
+        <div class="guide-step"><span class="g-num">2</span><div><b>Naam + code</b><span>Website name aur HTML/CSS/JS files daalo</span></div></div>
+        <div class="guide-step"><span class="g-num">3</span><div><b>Deploy dabao</b><span>Kuch seconds me live link mil jayega</span></div></div>
+      </div>
+
+      <div class="status-card" id="statusCard">
+        <h2>🎉 Website Ready <span class="pub-badge on" id="pubBadge">ON</span></h2>
+        <div class="url-out"><code id="finalUrl"></code><button class="copy-mini" data-copy="finalUrl">Copy</button></div>
+        <div class="build-status" id="buildStatus"><span class="signal-dot yellow" id="buildSignal"></span><span id="buildStatusText"></span></div>
+        <a class="open-btn" id="openBtn" href="#" target="_blank">🌐 Website Kholo</a>
+        <div class="toggle-row">
+          <div class="toggle-info"><b>Published</b><span>Off = site offline (repo safe rehta hai)</span></div>
+          <label class="switch"><input type="checkbox" id="publishToggle" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="vis-btn-row">
+          <button class="vis-btn" id="setPublicBtn" data-mode="public"><span class="signal-dot green"></span>🌍 Public ON</button>
+          <button class="vis-btn" id="setPrivateBtn" data-mode="private"><span class="signal-dot red"></span>🔒 Private ON</button>
+        </div>
+
+      <div class="tool-card">
+        <div class="tool-head">
+          <div class="tool-icon">🔳</div>
+          <div>
+            <h3>Website QR Code</h3>
+            <p>Website ready hone ke baad live URL ka QR yaha dikhega.</p>
+          </div>
+        </div>
+        <button class="btn btn-ghost" id="generateQrBtn" style="width:100%;">🔄 Refresh QR</button>
+        <div class="tool-output" id="qrOutput">
+          <div class="qr-wrap">
+            <b style="font-size:12px;color:var(--white);">Scan karke website kholo</b>
+            <img id="qrImage" alt="Website QR Code">
+            <div id="qrUrl" style="font-size:10.5px;color:var(--muted);word-break:break-all;"></div>
+            <button class="btn btn-ghost" id="downloadQrBtn" style="margin-top:10px;width:100%;">⬇️ Download QR</button>
+          </div>
+        </div>
+      </div>
+      </div>
+      </aside>
+      </div>
+    </div>
+
+    <!-- SITES TAB -->
+    <div class="tab" id="tab-sites"><div style="margin-bottom:18px;"><div style="font-size:27px;font-weight:750;color:var(--white);">My Websites</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">Repositories aur live websites manage karo.</div></div>
+      <div class="card">
+        <h2>📁 Meri Websites</h2>
+        <button class="btn btn-ghost" id="refreshSitesBtn" style="width:100%;margin-bottom:4px;">🔄 Refresh List</button>
+      </div>
+      <div id="sitesList"><div class="empty-note"><span class="e-ic">🔑</span>Token daal ke "Refresh List" dabao.</div></div>
+
+      <div class="card" style="margin-top:14px;">
+        <h2>📝 Website Notes</h2>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:12px;">Website se jude important notes yaha number-wise save karo.</p>
+        <div class="note-input-row">
+          <input type="text" id="siteNoteInput" placeholder="Note likho aur Add dabao...">
+          <button class="btn btn-green" id="siteNoteAddBtn" style="flex:0 0 auto;">➕ Add</button>
+        </div>
+        <ol class="note-list" id="siteNoteList"></ol>
+      </div>
+    </div>
+
+    <!-- HOSTING TAB -->
+    <div class="tab" id="tab-hosting"><div style="margin-bottom:18px;"><div style="font-size:27px;font-weight:750;color:var(--white);">Hosting</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">Kitni websites connect / live hain — sab details ek jagah.</div></div>
+      <div class="card">
+        <h2>📊 Hosting Overview</h2>
+        <button class="btn btn-ghost" id="refreshHostingBtn" style="width:100%;margin-bottom:14px;">🔄 Refresh Details</button>
+        <div class="stat-grid">
+          <div class="stat-tile g1"><div class="s-ic">📦</div><div class="s-num" id="statTotal">0</div><div class="s-lbl">Total Repos</div></div>
+          <div class="stat-tile g4"><div class="s-ic">🟢</div><div class="s-num" id="statLive">0</div><div class="s-lbl">Live Websites</div></div>
+          <div class="stat-tile g2"><div class="s-ic">🌍</div><div class="s-num" id="statPublic">0</div><div class="s-lbl">Public</div></div>
+          <div class="stat-tile g3"><div class="s-ic">🔒</div><div class="s-num" id="statPrivate">0</div><div class="s-lbl">Private</div></div>
+        </div>
+        <div class="conn-row">
+          <div class="conn-dot" id="connDot"></div>
+          <div style="flex:1;"><b id="connName">Not connected</b><span id="connSub">Token daal ke connect karo (Settings tab)</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🗂️ Meri Hosted Websites</h2>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:2px;">Har website ka live status, visibility aur delete — sab yahi se.</p>
+      </div>
+      <div id="hostList"><div class="empty-note"><span class="e-ic">🔄</span>"Refresh Details" dabao list dekhne ke liye.</div></div>
+
+      <div class="card" style="margin-top:4px;">
+        <h2>👁️ Visitor Tracking</h2>
+        <div class="tip warn">⚠️ GitHub Pages ek <b>static hosting</b> hai — isme koi server/backend nahi hota, isliye kisi bhi tool se real visitor <b>IP address</b>, unki visit history, ya <b>IP block/unblock</b> karna GitHub Pages par technically possible nahi hai (GitHub khud bhi ye data nahi deta).</div>
+        <p style="font-size:11.5px;color:var(--muted);line-height:1.6;">Agar tumhe real visitor analytics (kitni baar dekha, kahan se aaye) chahiye to website me ek free analytics service (jaise Cloudflare Web Analytics ya Google Analytics) ka script add karna padega — wo apna dashboard alag se dega. Blocking ke liye Cloudflare jaisi service ko domain ke aage lagana padta hai.</p>
+        <div class="toggle-row" style="margin-top:12px;">
+          <div class="toggle-info"><b>Simple Visitor Counter</b><span>Deploy ke waqt Settings → Extra Options me "Visitor Counter" on karo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEMPLATES TAB -->
+    <div class="tab" id="tab-templates"><div style="margin-bottom:18px;"><div style="font-size:27px;font-weight:750;color:var(--white);">Templates</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">Ready-made starter designs choose karo.</div></div>
+      <div class="card"><h2>🎨 Templates</h2><p style="font-size:11.5px;color:var(--muted);">Select karke seedha edit karo</p></div>
+      <div id="tplList"></div>
+
+      <div class="card" style="margin-top:4px;">
+        <h2>🛠️ Extra Tools</h2>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:4px;">Quick utilities — deploy ke bina bhi kaam aayenge</p>
+      </div>
+
+      <div class="tool-grid">
+        <!-- 1. UPDATE HTML FILE -->
+        <div class="tool-card">
+          <div class="tool-head">
+            <div class="tool-icon">🔄</div>
+            <div>
+              <h3>Update Website File</h3>
+              <p>Already publish ki hui file load karo, edit karo, aur seedha update push karo.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div><label>File Name</label><input type="text" id="updFileName" value="index.html"></div>
+          </div>
+          <div class="btn-row" style="margin-bottom:10px;">
+            <button class="btn btn-ghost" id="updLoadBtn">📥 Load File</button>
+            <button class="btn btn-green" id="updPushBtn">⬆️ Push Update</button>
+          </div>
+          <textarea id="updFileContent" spellcheck="false" placeholder="Pehle 'Load File' dabao..." style="min-height:180px;"></textarea>
+          <div class="small-note">Repo Name aur Token, Home / Settings tab me jo daala hai wahi use hoga.</div>
+        </div>
+
+        <!-- 2. QR GENERATOR (general) -->
+        <div class="tool-card">
+          <div class="tool-head">
+            <div class="tool-icon">🔳</div>
+            <div>
+              <h3>QR Code Generator</h3>
+              <p>Koi bhi link ya text daal ke turant QR code banao.</p>
+            </div>
+          </div>
+          <input type="text" id="genQrText" placeholder="https://example.com ya koi bhi text">
+          <button class="btn btn-green" id="genQrBtn" style="width:100%;">🔳 Generate QR</button>
+          <div class="tool-output" id="genQrOutput">
+            <div class="qr-wrap">
+              <img id="genQrImage" alt="QR Code">
+              <div id="genQrTextOut" style="font-size:10.5px;color:var(--muted);word-break:break-all;"></div>
+              <button class="btn btn-ghost" id="genQrDownloadBtn" style="margin-top:10px;width:100%;">⬇️ Download QR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. NOTEPAD -->
+        <div class="tool-card">
+          <div class="tool-head">
+            <div class="tool-icon">📝</div>
+            <div>
+              <h3>Notepad</h3>
+              <p>Quick notes, code snippets ya reminders — auto-save hoti hai.</p>
+            </div>
+          </div>
+          <textarea id="notepadArea" placeholder="Yaha likho... auto-save ho jayega" style="min-height:180px;"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-ghost" id="notepadCopyBtn">📋 Copy</button>
+            <button class="btn btn-ghost" id="notepadDownloadBtn">⬇️ .txt</button>
+            <button class="btn btn-red" id="notepadClearBtn">🗑 Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- HISTORY TAB -->
+    <div class="tab" id="tab-history"><div style="margin-bottom:18px;"><div style="font-size:27px;font-weight:750;color:var(--white);">Deploy History</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">Recent deployment activity yahan dikhegi.</div></div>
+      <div class="card">
+        <h2>🕘 Deploy History</h2>
+        <button class="btn btn-ghost" id="clearHistBtn" style="width:100%;">🗑 Clear History</button>
+      </div>
+      <div id="histList"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab" id="tab-settings"><div style="margin-bottom:18px;"><div style="font-size:27px;font-weight:750;color:var(--white);">Settings</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">GitHub, domain aur extra deployment options.</div></div>
+      <div class="card">
+        <h2>🔑 GitHub Token</h2>
+        <div class="tip">Token nahi hai? <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=sanhub-deploy&type=classic" target="_blank">Yaha banao</a> — sirf <b>repo</b> scope tick karo.</div>
+        <div class="tip warn">⚠️ "Fine-grained" page khule to top pe "Tokens (classic)" tab pe jao, warna 404 aayega.</div>
+        <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx" style="margin-bottom:8px;">
+        <div class="toggle-row">
+          <div class="toggle-info"><b>Token yaad rakho</b><span>Is browser me save ho (safe rakho)</span></div>
+          <label class="switch"><input type="checkbox" id="rememberToken"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🌍 Custom Domain</h2>
+        <label>Apna Domain (optional)</label>
+        <input type="text" id="customDomain" placeholder="mywebsite.com">
+        <div class="tip">Domain daalne ke baad deploy karo — CNAME file auto-ban jayegi. DNS me apne domain provider ke paas <code>A record</code> ya <code>CNAME</code> GitHub ki taraf point karna hoga.</div>
+      </div>
+
+      <div class="card">
+        <h2>⚙️ Extra Options</h2>
+        <div class="toggle-row" style="margin-bottom:10px;">
+          <div class="toggle-info"><b>Auto README.md</b><span>Deploy ke saath README bhi ban jayegi</span></div>
+          <label class="switch"><input type="checkbox" id="autoReadme" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><b>Visitor Counter</b><span>Website pe views badge dikhega</span></div>
+          <label class="switch"><input type="checkbox" id="addCounter"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:10.5px;color:var(--muted);">Sab kuch tumhare browser aur GitHub ke beech direct hota hai — koi third-party server nahi.</p>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" data-tab="home"><span class="ic">🏠</span>Home</button>
+    <button class="nav-btn" data-tab="sites"><span class="ic">📁</span>Sites</button>
+    <button class="nav-btn" data-tab="hosting"><span class="ic">🌐</span>Hosting</button>
+    <button class="nav-btn" data-tab="templates"><span class="ic">🎨</span>Templates</button>
+    <button class="nav-btn" data-tab="history"><span class="ic">🕘</span>History</button>
+    <button class="nav-btn" data-tab="settings"><span class="ic">⚙️</span>Settings</button>
+  </div>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const DEFAULT_HTML = '<!DOCTYPE html>\n<html lang="hi">\n<head>\n<meta charset="UTF-8">\n<title>Meri Website</title>\n</head>\n<body style="font-family:sans-serif;text-align:center;padding:80px 20px;background:#0d1117;color:#fff;">\n  <h1>🎉 Meri Website Live Hai!</h1>\n  <p>GitHub Pages se auto-deploy hui hai.</p>\n</body>\n</html>';
+
+let files = { "index.html": { content: DEFAULT_HTML, encoding: "utf-8" } };
+let activeFile = "index.html";
+let liveState = { username: null, repoName: null };
+let history_ = [];
+try { history_ = JSON.parse(localStorage.getItem("gh_deploy_history") || "[]"); } catch(e){ history_ = []; }
+
+/* ================= THEME ================= */
+const themeBtn = document.getElementById("themeBtn");
+let theme = localStorage.getItem("gh_deploy_theme") || "dark";
+applyTheme();
+themeBtn.addEventListener("click", () => { theme = theme === "dark" ? "light" : "dark"; localStorage.setItem("gh_deploy_theme", theme); applyTheme(); });
+function applyTheme(){ document.documentElement.setAttribute("data-theme", theme); themeBtn.textContent = theme === "dark" ? "🌙" : "☀️"; }
+
+/* ================= TABS ================= */
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.getAttribute("data-tab")).classList.add("active");
+  });
+});
+function goToTab(name){ document.querySelector('.nav-btn[data-tab="'+name+'"]').click(); }
+
+/* ================= TOKEN REMEMBER ================= */
+const tokenInput = document.getElementById("token");
+const rememberToken = document.getElementById("rememberToken");
+const savedToken = localStorage.getItem("gh_deploy_token");
+if (savedToken) { tokenInput.value = savedToken; rememberToken.checked = true; }
+rememberToken.addEventListener("change", () => {
+  if (!rememberToken.checked) localStorage.removeItem("gh_deploy_token");
+  else if (tokenInput.value.trim()) localStorage.setItem("gh_deploy_token", tokenInput.value.trim());
+});
+tokenInput.addEventListener("input", () => { if (rememberToken.checked) localStorage.setItem("gh_deploy_token", tokenInput.value.trim()); });
+
+/* ================= HELPERS ================= */
+function log(msg, type) {
+  const logBox = document.getElementById("log");
+  logBox.classList.add("show");
+  const line = document.createElement("div");
+  line.className = type || "info";
+  line.textContent = msg;
+  logBox.appendChild(line);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+function clearLog(){ const l=document.getElementById("log"); l.innerHTML=""; l.classList.remove("show"); }
+
+/* ================= TOASTS ================= */
+function showToast(msg, type){
+  const stack = document.getElementById("toastStack");
+  if (!stack) return;
+  const t = document.createElement("div");
+  t.className = "toast" + (type ? " " + type : "");
+  const icon = type === "ok" ? "✅" : type === "err" ? "❌" : "ℹ️";
+  t.innerHTML = '<span class="t-ic">'+icon+'</span><span class="t-msg"></span>';
+  t.querySelector(".t-msg").textContent = msg;
+  stack.appendChild(t);
+  setTimeout(() => {
+    t.classList.add("leaving");
+    setTimeout(() => t.remove(), 220);
+  }, 4200);
+}
+
+/* ================= CONFETTI ================= */
+function fireConfetti(){
+  const colors = ["#238636","#2ea043","#58a6ff","#d29922","#f0f6fc"];
+  const count = 60;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDuration = (2.2 + Math.random() * 1.4) + "s";
+    p.style.animationDelay = (Math.random() * 0.3) + "s";
+    p.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 4200);
+  }
+}
+
+/* ================= DEPLOY STEPPER ================= */
+function stepperShow(){ const s=document.getElementById("deployStepper"); if(s) s.style.display="flex"; }
+function stepperReset(){
+  document.querySelectorAll("#deployStepper .step").forEach(el => el.classList.remove("done","active","err"));
+}
+function stepperSet(name, state){
+  const order = ["account","repo","files","pages","live"];
+  const idx = order.indexOf(name);
+  document.querySelectorAll("#deployStepper .step").forEach((el, i) => {
+    el.classList.remove("active","err");
+    if (state === "err" && i === idx) { el.classList.add("err"); return; }
+    if (i < idx || (i === idx && state === "done")) el.classList.add("done");
+    else if (i === idx && state === "active") el.classList.add("active");
+  });
+  const pctMap = { account:12, repo:32, files:60, pages:85, live:100 };
+  const textMap = {
+    account:"Account check ho raha hai...", repo:"Repository taiyaar ho raha hai...",
+    files:"Files upload ho rahi hain...", pages:"GitHub Pages enable ho rahi hai...",
+    live:"Website live ho gayi! 🎉"
+  };
+  if (state === "err") setProgress(pctMap[name] || 0, "Error — rok diya gaya", true);
+  else setProgress(pctMap[name] || 0, textMap[name] || "");
+}
+function setProgress(pct, text, isErr){
+  const wrap = document.getElementById("progressWrap");
+  const fill = document.getElementById("progressFill");
+  const pctEl = document.getElementById("progressPct");
+  const txtEl = document.getElementById("progressText");
+  if (!wrap) return;
+  wrap.classList.add("show");
+  fill.style.width = pct + "%";
+  fill.classList.toggle("err", !!isErr);
+  pctEl.textContent = pct + "%";
+  if (text) txtEl.textContent = text;
+}
+function progressReset(){
+  const wrap = document.getElementById("progressWrap");
+  if (wrap) wrap.classList.remove("show");
+  const fill = document.getElementById("progressFill");
+  if (fill) { fill.style.width = "0%"; fill.classList.remove("err"); }
+}
+function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
+async function gh(path, token, options) {
+  options = options || {};
+  const res = await fetch("https://api.github.com" + path, {
+    method: options.method || "GET",
+    headers: { "Authorization": "token " + token, "Accept": "application/vnd.github+json", "Content-Type": "application/json" },
+    body: options.body ? JSON.stringify(options.body) : undefined
+  });
+  let data = null; try { data = await res.json(); } catch(e){}
+  return { ok: res.ok, status: res.status, data };
+}
+function addHistory(action, repo) {
+  history_.unshift({ time: new Date().toLocaleString(), action, repo });
+  history_ = history_.slice(0, 40);
+  localStorage.setItem("gh_deploy_history", JSON.stringify(history_));
+  renderHistory();
+}
+
+/* ================= FILE CHIPS ================= */
+const chipRow = document.getElementById("chipRow");
+const siteCode = document.getElementById("siteCode");
+
+function renderChips() {
+  chipRow.innerHTML = "";
+  Object.keys(files).forEach(name => {
+    const chip = document.createElement("div");
+    chip.className = "chip" + (name === activeFile ? " active" : "");
+    chip.innerHTML = name + (name !== "index.html" ? ' <span class="x" data-del="'+name+'">✕</span>' : "");
+    chip.addEventListener("click", (e) => {
+      if (e.target.closest("[data-del]")) return;
+      switchFile(name);
+    });
+    chipRow.appendChild(chip);
+  });
+  const addChip = document.createElement("div");
+  addChip.className = "chip add";
+  addChip.textContent = "+ Add File";
+  addChip.addEventListener("click", () => {
+    const name = prompt("File ka naam do (e.g. about.html, style.css):");
+    if (!name) return;
+    if (files[name]) { switchFile(name); return; }
+    files[name] = { content: "", encoding: "utf-8" };
+    switchFile(name);
+  });
+  chipRow.appendChild(addChip);
+
+  chipRow.querySelectorAll("[data-del]").forEach(x => {
+    x.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const name = x.getAttribute("data-del");
+      delete files[name];
+      if (activeFile === name) activeFile = "index.html";
+      renderChips(); loadActiveIntoTextarea();
+    });
+  });
+}
+function switchFile(name){ activeFile = name; renderChips(); loadActiveIntoTextarea(); }
+function loadActiveIntoTextarea(){
+  const f = files[activeFile];
+  siteCode.value = f && f.encoding === "utf-8" ? f.content : (f ? "[Binary file — preview nahi hoga, upload ke waqt safe hai]" : "");
+  siteCode.disabled = !!(f && f.encoding !== "utf-8");
+}
+siteCode.addEventListener("input", () => { if (files[activeFile] && files[activeFile].encoding === "utf-8") files[activeFile].content = siteCode.value; });
+
+renderChips(); loadActiveIntoTextarea();
+
+/* ================= FILE UPLOAD / DRAG&DROP ================= */
+const fileDrop = document.getElementById("fileDrop");
+const fileInput = document.getElementById("fileInput");
+fileDrop.addEventListener("click", () => fileInput.click());
+fileDrop.addEventListener("dragover", e => { e.preventDefault(); fileDrop.classList.add("drag"); });
+fileDrop.addEventListener("dragleave", () => fileDrop.classList.remove("drag"));
+fileDrop.addEventListener("drop", e => { e.preventDefault(); fileDrop.classList.remove("drag"); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener("change", e => handleFiles(e.target.files));
+
+function handleFiles(fileList) {
+  Array.from(fileList).forEach(file => {
+    const isText = /\.(html|htm|css|js|md|json|txt|svg)$/i.test(file.name);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      if (isText) files[file.name] = { content: ev.target.result, encoding: "utf-8" };
+      else files[file.name] = { content: ev.target.result.split(",")[1], encoding: "base64" };
+      log("📄 Added: " + file.name, "ok");
+      renderChips();
+    };
+    if (isText) reader.readAsText(file); else reader.readAsDataURL(file);
+  });
+}
+
+/* ================= PREVIEW ================= */
+document.getElementById("previewBtn").addEventListener("click", () => {
+  const frame = document.getElementById("previewFrame");
+  const showing = frame.style.display === "block";
+  if (showing) { frame.style.display = "none"; return; }
+  const content = (files["index.html"] && files["index.html"].content) || "";
+  frame.srcdoc = content;
+  frame.style.display = "block";
+});
+
+/* ================= CLEAR CODE ================= */
+document.getElementById("clearCodeBtn").addEventListener("click", () => {
+  if (!files[activeFile] || !files[activeFile].content) { showToast("Code pehle se khaali hai.", "info"); return; }
+  if (!confirm("'" + activeFile + "' ka code clear karna hai?")) return;
+  files[activeFile].content = "";
+  siteCode.value = "";
+  const frame = document.getElementById("previewFrame");
+  if (frame) frame.style.display = "none";
+  showToast("Code clear ho gaya.", "ok");
+});
+
+/* ================= VISIBILITY TOGGLE ================= */
+const repoPrivateToggle = document.getElementById("repoPrivateToggle");
+const visibilityDesc = document.getElementById("visibilityDesc");
+repoPrivateToggle.addEventListener("change", () => {
+  visibilityDesc.textContent = repoPrivateToggle.checked ? "Private — sirf tum dekh sakte ho" : "Public — sabko dikhegi";
+});
+
+/* ================= LOAD EXISTING CODE ================= */
+document.getElementById("loadBtn").addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const repoName = document.getElementById("repoName").value.trim();
+  if (!token) { log("❌ Token daalo pehle (Settings tab).", "err"); return; }
+  if (!repoName) { log("❌ Repo name daalo.", "err"); return; }
+  clearLog();
+  const me = await gh("/user", token);
+  if (!me.ok) { log("❌ Token galat hai.", "err"); return; }
+  const file = await gh("/repos/" + me.data.login + "/" + repoName + "/contents/index.html", token);
+  if (!file.ok) { log("⚠️ index.html nahi mila is repo me.", "info"); return; }
+  files["index.html"] = { content: b64DecodeUnicode(file.data.content.replace(/\n/g, "")), encoding: "utf-8" };
+  switchFile("index.html");
+  log("✅ Existing code load ho gaya.", "ok");
+});
+
+/* ================= DEPLOY ================= */
+const deployBtn = document.getElementById("deployBtn");
+const statusCard = document.getElementById("statusCard");
+const publishToggle = document.getElementById("publishToggle");
+const pubBadge = document.getElementById("pubBadge");
+
+deployBtn.addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const repoName = document.getElementById("repoName").value.trim();
+  const customDomain = document.getElementById("customDomain").value.trim();
+  const autoReadme = document.getElementById("autoReadme").checked;
+  const addCounter = document.getElementById("addCounter").checked;
+
+  if (!token) { log("❌ Token daalo (Settings tab me).", "err"); goToTab("settings"); return; }
+  if (!repoName) { log("❌ Repo name daalo.", "err"); return; }
+
+  deployBtn.disabled = true; deployBtn.textContent = "⏳ Kaam ho raha hai...";
+  clearLog(); statusCard.classList.remove("show");
+  progressReset(); stepperShow(); stepperReset(); stepperSet("account", "active");
+
+  try {
+    log("🔍 Account check ho raha hai...");
+    const me = await gh("/user", token);
+    if (!me.ok) { log("❌ Token galat/expired hai.", "err"); stepperSet("account","err"); showToast("Token galat ya expired hai.", "err"); return resetBtn(); }
+    const username = me.data.login;
+    log("✅ Logged in as " + username, "ok");
+    stepperSet("account", "done"); stepperSet("repo", "active");
+
+    const wantPrivate = repoPrivateToggle.checked;
+    log("📦 Repo bana rahe hain: " + repoName + " (" + (wantPrivate ? "Private" : "Public") + ")");
+    const createRepo = await gh("/user/repos", token, { method: "POST", body: { name: repoName, private: wantPrivate, auto_init: true } });
+    if (!createRepo.ok && createRepo.status !== 422) { log("❌ Repo fail: " + JSON.stringify(createRepo.data), "err"); stepperSet("repo","err"); showToast("Repo create fail ho gaya.", "err"); return resetBtn(); }
+    if (createRepo.status === 422) {
+      log("⚠️ Repo pehle se hai, update kar rahe hain.", "ok");
+      await gh("/repos/" + username + "/" + repoName, token, { method: "PATCH", body: { private: wantPrivate } });
+    } else log("✅ Repo ban gaya.", "ok");
+    stepperSet("repo", "done"); stepperSet("files", "active");
+    await new Promise(r => setTimeout(r, 1500));
+
+    if (addCounter && files["index.html"] && !files["index.html"].content.includes("visitor-badge")) {
+      const badge = '\n<!--visitor-badge--><p style="text-align:center"><img src="https://visitor-badge.laobi.icu/badge?page_id='+username+'.'+repoName+'" alt="visitors"></p>\n';
+      const c = files["index.html"].content;
+      files["index.html"].content = c.includes("</body>") ? c.replace("</body>", badge + "</body>") : c + badge;
+      if (activeFile === "index.html") siteCode.value = files["index.html"].content;
+      log("📊 Visitor counter add kiya.", "info");
+    }
+
+    if (customDomain) { files["CNAME"] = { content: customDomain, encoding: "utf-8" }; log("🌍 CNAME file ready: " + customDomain, "info"); }
+    if (autoReadme && !files["README.md"]) {
+      files["README.md"] = { content: "# " + repoName + "\n\nAuto-deployed website via SANHUB DEPLOY.\n", encoding: "utf-8" };
+    }
+
+    log("📝 Files upload ho rahe hain (" + Object.keys(files).length + ")...");
+    for (const name of Object.keys(files)) {
+      const f = files[name];
+      const existing = await gh("/repos/" + username + "/" + repoName + "/contents/" + encodeURIComponent(name), token);
+      const sha = (existing.ok && existing.data && existing.data.sha) ? existing.data.sha : undefined;
+      const content = f.encoding === "utf-8" ? b64EncodeUnicode(f.content) : f.content;
+      const put = await gh("/repos/" + username + "/" + repoName + "/contents/" + encodeURIComponent(name), token, {
+        method: "PUT", body: { message: "Deploy via app", content, branch: "main", sha }
+      });
+      if (!put.ok) {
+        log("❌ " + name + " fail: " + JSON.stringify(put.data), "err");
+        if (put.status === 404) log("👉 Fine-grained token lag raha hai. 'Tokens (classic)' se banao.", "info");
+      } else log("✅ " + name + " uploaded.", "ok");
+    }
+    stepperSet("files", "done"); stepperSet("pages", "active");
+
+    log("🌐 GitHub Pages enable ho raha hai...");
+    let pagesRes = await gh("/repos/" + username + "/" + repoName + "/pages", token, { method: "POST", body: { source: { branch: "main", path: "/" } } });
+    if (customDomain) {
+      const cnameRes = await gh("/repos/" + username + "/" + repoName + "/pages", token, { method: "PUT", body: { cname: customDomain } });
+      log(cnameRes.ok ? "✅ Custom domain set ho gaya." : "⚠️ Domain set nahi hua: " + JSON.stringify(cnameRes.data), cnameRes.ok ? "ok" : "info");
+    }
+    log((pagesRes.ok || pagesRes.status === 409) ? "✅ Pages ready." : "⚠️ Pages: " + JSON.stringify(pagesRes.data), "info");
+
+    liveState.username = username; liveState.repoName = repoName;
+    const liveUrl = customDomain ? "https://" + customDomain + "/" : "https://" + username.toLowerCase() + ".github.io/" + repoName + "/";
+    document.getElementById("finalUrl").textContent = liveUrl;
+    document.getElementById("openBtn").href = liveUrl;
+    generateWebsiteQR(liveUrl);
+    publishToggle.checked = true; setPubBadge(true); publishToggle.disabled = false;
+    setVisButtons(wantPrivate);
+    statusCard.classList.add("show");
+    stepperSet("pages", "done"); stepperSet("live", "done");
+    log("🎉 Deploy complete: " + liveUrl, "ok");
+    addHistory("Deployed", repoName);
+    showToast("Website deploy ho gayi! 🎉", "ok");
+    fireConfetti();
+    pollBuildStatus(username, repoName, token);
+
+  } catch (err) { log("❌ Error: " + err.message, "err"); showToast("Kuch error aa gaya: " + err.message, "err"); }
+  resetBtn();
+});
+function resetBtn(){ deployBtn.disabled = false; deployBtn.textContent = "⚡ Deploy / Update Website"; }
+
+/* ================= BUILD STATUS POLL ================= */
+async function pollBuildStatus(username, repoName, token) {
+  const dot = document.getElementById("buildSignal");
+  const txt = document.getElementById("buildStatusText");
+  let tries = 0;
+  function setBuild(color, text){ dot.className = "signal-dot " + color; txt.textContent = text; }
+  setBuild("yellow", "⏳ Build status check ho raha hai...");
+  const iv = setInterval(async () => {
+    tries++;
+    const res = await gh("/repos/" + username + "/" + repoName + "/pages/builds/latest", token);
+    if (res.ok && res.data && res.data.status) {
+      const s = res.data.status;
+      if (s === "built") { setBuild("green", "✅ Live! Build successful."); clearInterval(iv); }
+      else if (s === "errored") { setBuild("red", "❌ Build fail hui — code check karo."); clearInterval(iv); }
+      else setBuild("yellow", "⏳ Status: " + s + "...");
+    }
+    if (tries > 18) { setBuild("yellow", "ℹ️ Thoda aur time lag sakta hai, link thodi der me check karo."); clearInterval(iv); }
+  }, 5000);
+}
+
+/* ================= PUBLISH TOGGLE ================= */
+function setPubBadge(on){ pubBadge.textContent = on ? "ON" : "OFF"; pubBadge.className = "pub-badge " + (on ? "on" : "off"); }
+publishToggle.addEventListener("change", async () => {
+  const token = tokenInput.value.trim();
+  if (!liveState.username) return;
+  publishToggle.disabled = true;
+  const on = publishToggle.checked;
+  try {
+    if (on) {
+      const res = await gh("/repos/" + liveState.username + "/" + liveState.repoName + "/pages", token, { method: "POST", body: { source: { branch: "main", path: "/" } } });
+      if (res.ok || res.status === 409) { log("✅ Website publish ho gayi.", "ok"); setPubBadge(true); addHistory("Published", liveState.repoName); showToast("Website publish ho gayi.", "ok"); }
+      else { log("❌ Publish fail: " + JSON.stringify(res.data), "err"); publishToggle.checked = false; showToast("Publish nahi ho paaya.", "err"); }
+    } else {
+      const res = await gh("/repos/" + liveState.username + "/" + liveState.repoName + "/pages", token, { method: "DELETE" });
+      if (res.ok || res.status === 404) { log("✅ Website offline kar di.", "ok"); setPubBadge(false); addHistory("Unpublished", liveState.repoName); showToast("Website offline kar di gayi.", "ok"); }
+      else { log("❌ Fail: " + JSON.stringify(res.data), "err"); publishToggle.checked = true; showToast("Kuch fail ho gaya.", "err"); }
+    }
+  } catch(err){ log("❌ Error: " + err.message, "err"); }
+  publishToggle.disabled = false;
+});
+
+/* ================= PUBLIC / PRIVATE VISIBILITY BUTTONS ================= */
+const setPublicBtn = document.getElementById("setPublicBtn");
+const setPrivateBtn = document.getElementById("setPrivateBtn");
+function setVisButtons(isPrivate){
+  setPublicBtn.classList.toggle("active", !isPrivate);
+  setPrivateBtn.classList.toggle("active", isPrivate);
+}
+async function changeVisibility(makePrivate){
+  const token = tokenInput.value.trim();
+  if (!liveState.username) return;
+  setPublicBtn.disabled = true; setPrivateBtn.disabled = true;
+  const res = await gh("/repos/" + liveState.username + "/" + liveState.repoName, token, { method: "PATCH", body: { private: makePrivate } });
+  if (res.ok) {
+    setVisButtons(makePrivate);
+    log("✅ Visibility set to " + (makePrivate ? "Private" : "Public") + ".", "ok");
+    showToast("Website ab " + (makePrivate ? "Private" : "Public") + " hai.", "ok");
+  } else { log("❌ Visibility change fail: " + JSON.stringify(res.data), "err"); showToast("Visibility change fail ho gaya.", "err"); }
+  setPublicBtn.disabled = false; setPrivateBtn.disabled = false;
+}
+setPublicBtn.addEventListener("click", () => changeVisibility(false));
+setPrivateBtn.addEventListener("click", () => changeVisibility(true));
+
+/* ================= COPY ================= */
+document.addEventListener("click", e => {
+  const byId = e.target.closest("[data-copy]");
+  if (byId) { const el = document.getElementById(byId.getAttribute("data-copy")); if (el) copyText(el.textContent.trim(), byId); }
+});
+function copyText(text, btn) {
+  const original = btn.textContent;
+  const flash = () => { btn.textContent = "Copied!"; setTimeout(() => btn.textContent = original, 1200); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(flash).catch(fallback);
+  else fallback();
+  function fallback(){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); flash();}catch(e){} document.body.removeChild(ta); }
+}
+
+
+/* ================= WEBSITE QR + TOKEN GENERATOR ================= */
+const qrOutput = document.getElementById("qrOutput");
+const qrImage = document.getElementById("qrImage");
+const qrUrl = document.getElementById("qrUrl");
+const generateQrBtn = document.getElementById("generateQrBtn");
+const downloadQrBtn = document.getElementById("downloadQrBtn");
+
+function generateWebsiteQR(url){
+  if (!url) return;
+  const encoded = encodeURIComponent(url);
+  // QR image is generated client-side through a public QR image endpoint.
+  qrImage.src = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" + encoded;
+  qrUrl.textContent = url;
+  qrOutput.classList.add("show");
+}
+
+function generateQRFromCurrentWebsite(){
+  const url = (document.getElementById("finalUrl").textContent || "").trim();
+  if (!url || !/^https?:\/\//i.test(url)) {
+    log("⚠️ Pehle website deploy/ready karo, phir QR generate hoga.", "info");
+    return;
+  }
+  generateWebsiteQR(url);
+  log("🔳 Website QR code ready hai.", "ok");
+}
+
+generateQrBtn.addEventListener("click", generateQRFromCurrentWebsite);
+
+downloadQrBtn.addEventListener("click", async () => {
+  const src = qrImage.src;
+  if (!src) return;
+  try {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "website-qr-code.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  } catch(e) {
+    window.open(src, "_blank");
+  }
+});
+
+/* Automatically show QR as soon as deployment produces the final URL. */
+const originalDeployCompleteLog = log;
+
+/* ================= SITES TAB ================= */
+document.getElementById("refreshSitesBtn").addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const list = document.getElementById("sitesList");
+  if (!token) { list.innerHTML = '<div class="empty-note"><span class="e-ic">🔑</span>Pehle Settings me token daalo.</div>'; return; }
+  list.innerHTML = '<div class="empty-note"><span class="e-ic">⏳</span>Load ho raha hai...</div>';
+  const me = await gh("/user", token);
+  if (!me.ok) { list.innerHTML = '<div class="empty-note"><span class="e-ic">❌</span>Token galat hai.</div>'; showToast("Token galat ya expired hai.", "err"); return; }
+  const repos = await gh("/user/repos?per_page=100&sort=updated", token);
+  if (!repos.ok || !Array.isArray(repos.data) || repos.data.length === 0) { list.innerHTML = '<div class="empty-note"><span class="e-ic">📁</span>Koi repo nahi mila.</div>'; return; }
+  list.innerHTML = "";
+  repos.data.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "site-card";
+    const liveUrl = "https://" + me.data.login.toLowerCase() + ".github.io/" + r.name + "/";
+    div.innerHTML =
+      '<div class="site-top">' +
+        '<div class="site-name-wrap"><b title="'+r.name+'">' + r.name + '</b></div>' +
+        '<div class="site-badges">' +
+          '<span class="signal"><span class="signal-dot ' + (r.has_pages ? "green" : "red") + '"></span>' + (r.has_pages ? "Live" : "Off") + '</span>' +
+          '<span class="badge-sm">' + (r.private ? "🔒 Private" : "🌍 Public") + '</span>' +
+        '</div>' +
+      '</div>' +
+      (r.has_pages ? '<div class="site-link-row"><code>' + liveUrl + '</code><button class="mini-btn copy-link" data-url="' + liveUrl + '">📋 Copy</button><button class="mini-btn qr-toggle" data-url="' + liveUrl + '">🔳 QR</button></div>' : '') +
+      '<div class="site-bottom">' +
+        '<div class="site-toggle-mini"><span>' + (r.has_pages ? "ON" : "OFF") + '</span><label class="switch sm"><input type="checkbox" class="site-pause" data-repo="' + r.name + '" ' + (r.has_pages ? "checked" : "") + '><span class="slider"></span></label></div>' +
+        '<div class="site-mini-actions">' +
+          '<button class="mini-btn use-repo" data-repo="' + r.name + '">📂 Use</button>' +
+          '<button class="mini-btn del-repo" data-repo="' + r.name + '" style="color:var(--red);border-color:rgba(218,54,51,.4);">🗑</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="site-qr-inline" id="qrInline-' + r.name.replace(/[^a-zA-Z0-9_-]/g,"") + '"><img alt="QR"></div>';
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll(".use-repo").forEach(b => b.addEventListener("click", async () => {
+    const repoName = b.getAttribute("data-repo");
+    document.getElementById("repoName").value = repoName;
+    goToTab("home");
+    const file = await gh("/repos/" + me.data.login + "/" + repoName + "/contents/index.html", token);
+    if (file.ok) { files["index.html"] = { content: b64DecodeUnicode(file.data.content.replace(/\n/g,"")), encoding:"utf-8" }; switchFile("index.html"); log("✅ " + repoName + " ka code load ho gaya.", "ok"); }
+  }));
+  list.querySelectorAll(".del-repo").forEach(b => b.addEventListener("click", async () => {
+    const repoName = b.getAttribute("data-repo");
+    if (!confirm("Pakka '" + repoName + "' repo permanently delete karna hai? Ye undo nahi ho sakta.")) return;
+    const res = await gh("/repos/" + me.data.login + "/" + repoName, token, { method: "DELETE" });
+    if (res.ok || res.status === 204) { addHistory("Deleted", repoName); showToast("Repo delete ho gaya.", "ok"); document.getElementById("refreshSitesBtn").click(); }
+    else showToast("Delete nahi hua: " + JSON.stringify(res.data), "err");
+  }));
+  list.querySelectorAll(".copy-link").forEach(b => b.addEventListener("click", () => copyText(b.getAttribute("data-url"), b)));
+  list.querySelectorAll(".qr-toggle").forEach(b => b.addEventListener("click", () => {
+    const url = b.getAttribute("data-url");
+    const card = b.closest(".site-card");
+    const box = card.querySelector(".site-qr-inline");
+    const showing = box.classList.contains("show");
+    if (showing) { box.classList.remove("show"); return; }
+    box.querySelector("img").src = "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" + encodeURIComponent(url);
+    box.classList.add("show");
+  }));
+  list.querySelectorAll(".site-pause").forEach(cb => cb.addEventListener("change", async () => {
+    const repoName = cb.getAttribute("data-repo");
+    cb.disabled = true;
+    const on = cb.checked;
+    try {
+      let res;
+      if (on) res = await gh("/repos/" + me.data.login + "/" + repoName + "/pages", token, { method: "POST", body: { source: { branch: "main", path: "/" } } });
+      else res = await gh("/repos/" + me.data.login + "/" + repoName + "/pages", token, { method: "DELETE" });
+      if (res.ok || res.status === 409 || res.status === 404) {
+        addHistory(on ? "Published" : "Unpublished", repoName);
+        showToast(repoName + (on ? " publish ho gayi." : " offline kar di gayi."), "ok");
+        document.getElementById("refreshSitesBtn").click();
+      } else { cb.checked = !on; showToast("Kuch fail ho gaya.", "err"); }
+    } catch(e) { cb.checked = !on; showToast("Error: " + e.message, "err"); }
+    cb.disabled = false;
+  }));
+});
+
+/* ================= TEMPLATES ================= */
+const TEMPLATES = [
+  { icon:"💼", name:"Portfolio", desc:"About + Skills + Contact", html:'<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Portfolio</title></head><body style="font-family:sans-serif;background:#0d1117;color:#fff;margin:0;padding:60px 20px;text-align:center;"><h1>Aapka Naam</h1><p style="color:#8b949e;">Web Developer</p><h2 style="margin-top:40px;">About Me</h2><p style="max-width:500px;margin:10px auto;color:#c9d1d9;">Yaha apne baare me likho.</p><h2 style="margin-top:40px;">Skills</h2><p>HTML • CSS • JavaScript • React</p><h2 style="margin-top:40px;">Contact</h2><p>email@example.com</p></body></html>' },
+  { icon:"🪪", name:"Business Card", desc:"Simple digital card", html:'<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Business Card</title></head><body style="font-family:sans-serif;background:#0d1117;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;"><div style="background:#161b22;border:1px solid #30363d;border-radius:16px;padding:40px;text-align:center;max-width:320px;"><h1 style="margin-bottom:4px;">Aapka Naam</h1><p style="color:#8b949e;margin-bottom:16px;">Founder, Company</p><p>📞 +91 00000 00000</p><p>✉️ email@example.com</p></div></body></html>' },
+  { icon:"📄", name:"Resume", desc:"Experience + Education", html:'<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Resume</title></head><body style="font-family:sans-serif;background:#f6f8fa;color:#24292f;margin:0;padding:40px;max-width:650px;margin:0 auto;"><h1>Aapka Naam</h1><p style="color:#57606a;">Job Title</p><h2 style="margin-top:30px;border-bottom:2px solid #238636;">Experience</h2><p><b>Company Name</b> — Role (2022–Present)</p><h2 style="margin-top:30px;border-bottom:2px solid #238636;">Education</h2><p>Degree, College Name</p><h2 style="margin-top:30px;border-bottom:2px solid #238636;">Skills</h2><p>Skill 1, Skill 2, Skill 3</p></body></html>' },
+  { icon:"⏳", name:"Coming Soon", desc:"Launch teaser page", html:'<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Coming Soon</title></head><body style="font-family:sans-serif;background:#0d1117;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;text-align:center;"><div><h1 style="font-size:38px;">🚀 Kuch Bada Aa Raha Hai</h1><p style="color:#8b949e;margin-top:10px;">Website jald hi live hogi. Stay tuned!</p></div></body></html>' },
+  { icon:"⬜", name:"Blank", desc:"Khali starter page", html:DEFAULT_HTML }
+];
+const tplList = document.getElementById("tplList");
+TEMPLATES.forEach(t => {
+  const div = document.createElement("div");
+  div.className = "tpl-card";
+  div.innerHTML = '<div class="tpl-icon">'+t.icon+'</div><div class="tpl-body"><h3>'+t.name+'</h3><p>'+t.desc+'</p></div><button class="tpl-use">Use</button>';
+  div.querySelector(".tpl-use").addEventListener("click", () => {
+    files["index.html"] = { content: t.html, encoding: "utf-8" };
+    switchFile("index.html"); goToTab("home"); log("🎨 " + t.name + " template load ho gaya.", "ok");
+  });
+  tplList.appendChild(div);
+});
+
+/* ================= HISTORY ================= */
+function renderHistory() {
+  const list = document.getElementById("histList");
+  if (history_.length === 0) { list.innerHTML = '<div class="empty-note"><span class="e-ic">🕘</span>Abhi tak koi history nahi.</div>'; return; }
+  const icons = { Deployed:"⚡", Published:"🟢", Unpublished:"🔴", Deleted:"🗑", Updated:"🔄" };
+  list.innerHTML = history_.map(h =>
+    '<div class="hist-item"><div class="hist-ic">'+(icons[h.action]||"•")+'</div><div class="hist-body"><b>'+h.action+' — '+h.repo+'</b><span>'+h.time+'</span></div></div>'
+  ).join("");
+}
+document.getElementById("clearHistBtn").addEventListener("click", () => {
+  if (!confirm("Poori history clear karni hai?")) return;
+  history_ = []; localStorage.setItem("gh_deploy_history", "[]"); renderHistory();
+});
+renderHistory();
+
+/* Code editor preview / clear */
+function previewCode(){
+  const editor = document.getElementById('codeEditor');
+  const frame = document.getElementById('previewFrame');
+  const empty = document.getElementById('previewEmpty');
+  if(!editor || !frame) return;
+  const code = editor.value.trim();
+  if(!code){
+    alert('Pehle code add karein.');
+    editor.focus();
+    return;
+  }
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(code);
+  doc.close();
+  empty.style.display='none';
+  frame.style.display='block';
+}
+function refreshPreview(){
+  const editor = document.getElementById('codeEditor');
+  if(editor && editor.value.trim()) previewCode();
+}
+function clearCodeEditor(){
+  const editor = document.getElementById('codeEditor');
+  if(!editor) return;
+  if(!editor.value.trim()) return;
+  if(confirm('Code clear karna hai? Ye current editor code hata dega.')){
+    editor.value='';
+    const frame=document.getElementById('previewFrame');
+    const empty=document.getElementById('previewEmpty');
+    if(frame) frame.style.display='none';
+    if(empty) empty.style.display='flex';
+    editor.focus();
+  }
+}
+
+/* ================= TEMPLATES TAB: UPDATE HTML FILE ================= */
+document.getElementById("updLoadBtn").addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const repoName = document.getElementById("repoName").value.trim();
+  const fname = document.getElementById("updFileName").value.trim() || "index.html";
+  const area = document.getElementById("updFileContent");
+  if (!token) { showToast("Pehle Settings me token daalo.", "err"); goToTab("settings"); return; }
+  if (!repoName) { showToast("Repo name daalo (Home tab).", "err"); goToTab("home"); return; }
+  area.value = "⏳ Load ho raha hai...";
+  const me = await gh("/user", token);
+  if (!me.ok) { area.value = ""; showToast("Token galat hai.", "err"); return; }
+  const file = await gh("/repos/" + me.data.login + "/" + repoName + "/contents/" + encodeURIComponent(fname), token);
+  if (!file.ok) { area.value = ""; showToast(fname + " nahi mili is repo me.", "err"); return; }
+  area.value = b64DecodeUnicode(file.data.content.replace(/\n/g, ""));
+  showToast(fname + " load ho gayi.", "ok");
+});
+
+document.getElementById("updPushBtn").addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const repoName = document.getElementById("repoName").value.trim();
+  const fname = document.getElementById("updFileName").value.trim() || "index.html";
+  const area = document.getElementById("updFileContent");
+  if (!token) { showToast("Pehle Settings me token daalo.", "err"); goToTab("settings"); return; }
+  if (!repoName) { showToast("Repo name daalo (Home tab).", "err"); goToTab("home"); return; }
+  if (!area.value.trim()) { showToast("Pehle kuch content daalo ya load karo.", "err"); return; }
+  const btn = document.getElementById("updPushBtn");
+  const original = btn.textContent; btn.disabled = true; btn.textContent = "⏳ Update ho raha hai...";
+  try {
+    const me = await gh("/user", token);
+    if (!me.ok) { showToast("Token galat hai.", "err"); return; }
+    const existing = await gh("/repos/" + me.data.login + "/" + repoName + "/contents/" + encodeURIComponent(fname), token);
+    const sha = (existing.ok && existing.data && existing.data.sha) ? existing.data.sha : undefined;
+    const content = b64EncodeUnicode(area.value);
+    const put = await gh("/repos/" + me.data.login + "/" + repoName + "/contents/" + encodeURIComponent(fname), token, {
+      method: "PUT", body: { message: "Update via SANHUB DEPLOY", content, branch: "main", sha }
+    });
+    if (put.ok) { showToast(fname + " update ho gayi! ✅", "ok"); addHistory("Updated", repoName); }
+    else showToast("Update fail: " + JSON.stringify(put.data), "err");
+  } catch(e) { showToast("Error: " + e.message, "err"); }
+  btn.disabled = false; btn.textContent = original;
+});
+
+/* ================= TEMPLATES TAB: QR GENERATOR (general) ================= */
+document.getElementById("genQrBtn").addEventListener("click", () => {
+  const text = document.getElementById("genQrText").value.trim();
+  if (!text) { showToast("Pehle text ya link daalo.", "err"); return; }
+  const out = document.getElementById("genQrOutput");
+  document.getElementById("genQrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" + encodeURIComponent(text);
+  document.getElementById("genQrTextOut").textContent = text;
+  out.classList.add("show");
+  showToast("QR code ready hai.", "ok");
+});
+document.getElementById("genQrDownloadBtn").addEventListener("click", async () => {
+  const src = document.getElementById("genQrImage").src;
+  if (!src) return;
+  try {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "qr-code.png";
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+  } catch(e) { window.open(src, "_blank"); }
+});
+
+/* ================= TEMPLATES TAB: NOTEPAD ================= */
+const notepadArea = document.getElementById("notepadArea");
+notepadArea.value = localStorage.getItem("sanhub_notepad") || "";
+notepadArea.addEventListener("input", () => localStorage.setItem("sanhub_notepad", notepadArea.value));
+document.getElementById("notepadCopyBtn").addEventListener("click", () => {
+  if (!notepadArea.value.trim()) { showToast("Notepad khaali hai.", "err"); return; }
+  copyText(notepadArea.value, document.getElementById("notepadCopyBtn"));
+});
+document.getElementById("notepadDownloadBtn").addEventListener("click", () => {
+  if (!notepadArea.value.trim()) { showToast("Notepad khaali hai.", "err"); return; }
+  const blob = new Blob([notepadArea.value], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "notes.txt";
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+});
+document.getElementById("notepadClearBtn").addEventListener("click", () => {
+  if (!notepadArea.value.trim()) return;
+  if (!confirm("Notepad clear karna hai?")) return;
+  notepadArea.value = ""; localStorage.removeItem("sanhub_notepad");
+  showToast("Notepad clear ho gaya.", "ok");
+});
+
+/* ================= WEBSITE NOTES (numbered) ================= */
+let siteNotes = [];
+try { siteNotes = JSON.parse(localStorage.getItem("sanhub_site_notes") || "[]"); } catch(e){ siteNotes = []; }
+function renderSiteNotes(){
+  const list = document.getElementById("siteNoteList");
+  if (siteNotes.length === 0) { list.innerHTML = '<div class="empty-note"><span class="e-ic">📝</span>Abhi koi note nahi hai.</div>'; return; }
+  list.innerHTML = siteNotes.map((n, i) =>
+    '<li class="note-item"><div class="n-num">'+(i+1)+'</div><div class="n-txt"></div><button class="n-del" data-i="'+i+'">✕</button></li>'
+  ).join("");
+  list.querySelectorAll(".n-txt").forEach((el, i) => el.textContent = siteNotes[i]);
+  list.querySelectorAll(".n-del").forEach(b => b.addEventListener("click", () => {
+    siteNotes.splice(parseInt(b.getAttribute("data-i"), 10), 1);
+    localStorage.setItem("sanhub_site_notes", JSON.stringify(siteNotes));
+    renderSiteNotes();
+  }));
+}
+document.getElementById("siteNoteAddBtn").addEventListener("click", () => {
+  const input = document.getElementById("siteNoteInput");
+  const val = input.value.trim();
+  if (!val) { showToast("Pehle note likho.", "err"); return; }
+  siteNotes.push(val);
+  localStorage.setItem("sanhub_site_notes", JSON.stringify(siteNotes));
+  input.value = "";
+  renderSiteNotes();
+});
+document.getElementById("siteNoteInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("siteNoteAddBtn").click();
+});
+renderSiteNotes();
+
+/* ================= HOSTING OVERVIEW ================= */
+function animateCount(el, to){
+  const from = parseInt(el.textContent, 10) || 0;
+  const dur = 500, start = performance.now();
+  function step(t){
+    const p = Math.min(1, (t - start) / dur);
+    el.textContent = Math.round(from + (to - from) * p);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+document.getElementById("refreshHostingBtn").addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  const dot = document.getElementById("connDot");
+  const name = document.getElementById("connName");
+  const sub = document.getElementById("connSub");
+  const hostList = document.getElementById("hostList");
+  if (!token) { showToast("Pehle Settings me token daalo.", "err"); goToTab("settings"); return; }
+  dot.classList.remove("on","bad"); dot.classList.add("busy");
+  sub.textContent = "Connect ho raha hai...";
+  const me = await gh("/user", token);
+  if (!me.ok) {
+    dot.classList.remove("busy","on"); dot.classList.add("bad");
+    name.textContent = "Connection failed"; sub.textContent = "Token galat ya expired hai.";
+    showToast("Token galat hai.", "err"); return;
+  }
+  const repos = await gh("/user/repos?per_page=100&sort=updated", token);
+  const data = (repos.ok && Array.isArray(repos.data)) ? repos.data : [];
+  const total = data.length;
+  const live = data.filter(r => r.has_pages).length;
+  const pub = data.filter(r => !r.private).length;
+  const priv = data.filter(r => r.private).length;
+  animateCount(document.getElementById("statTotal"), total);
+  animateCount(document.getElementById("statLive"), live);
+  animateCount(document.getElementById("statPublic"), pub);
+  animateCount(document.getElementById("statPrivate"), priv);
+  dot.classList.remove("busy","bad"); dot.classList.add("on");
+  name.textContent = "Connected as " + me.data.login;
+  sub.textContent = total + " repos • " + live + " live • abhi refresh hua";
+  showToast("Hosting details update ho gayi.", "ok");
+  renderHostList(data, me.data.login, token);
+});
+
+function renderHostList(data, username, token){
+  const hostList = document.getElementById("hostList");
+  if (data.length === 0) { hostList.innerHTML = '<div class="empty-note"><span class="e-ic">📁</span>Koi repo nahi mila.</div>'; return; }
+  hostList.innerHTML = data.map(r => {
+    const liveUrl = "https://" + username.toLowerCase() + ".github.io/" + r.name + "/";
+    return '<div class="host-site" data-repo="'+r.name+'">' +
+      '<div class="host-site-top">' +
+        '<div class="signal"><span class="signal-dot ' + (r.has_pages ? "green" : "red") + '"></span><b title="'+r.name+'">' + r.name + '</b></div>' +
+        '<span class="badge-sm">' + (r.private ? "🔒 Private" : "🌍 Public") + '</span>' +
+      '</div>' +
+      (r.has_pages ? '<div class="site-link-row"><code>' + liveUrl + '</code><button class="mini-btn host-copy" data-url="' + liveUrl + '">📋</button></div>' : '') +
+      '<div class="host-site-actions">' +
+        '<button class="mini-btn host-use" data-repo="' + r.name + '">📂 Use</button>' +
+        '<button class="mini-btn host-vis" data-repo="' + r.name + '" data-private="' + (r.private ? "0" : "1") + '">' + (r.private ? "🌍 Public karo" : "🔒 Private karo") + '</button>' +
+        '<button class="mini-btn host-del" data-repo="' + r.name + '" style="color:var(--red);border-color:rgba(218,54,51,.4);">🗑 Delete</button>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+
+  hostList.querySelectorAll(".host-copy").forEach(b => b.addEventListener("click", () => copyText(b.getAttribute("data-url"), b)));
+
+  hostList.querySelectorAll(".host-use").forEach(b => b.addEventListener("click", async () => {
+    const repoName = b.getAttribute("data-repo");
+    document.getElementById("repoName").value = repoName;
+    goToTab("home");
+    const file = await gh("/repos/" + username + "/" + repoName + "/contents/index.html", token);
+    if (file.ok) { files["index.html"] = { content: b64DecodeUnicode(file.data.content.replace(/\n/g,"")), encoding:"utf-8" }; switchFile("index.html"); log("✅ " + repoName + " ka code load ho gaya.", "ok"); }
+  }));
+
+  hostList.querySelectorAll(".host-vis").forEach(b => b.addEventListener("click", async () => {
+    const repoName = b.getAttribute("data-repo");
+    const makePrivate = b.getAttribute("data-private") === "1";
+    b.disabled = true; const original = b.textContent; b.textContent = "⏳...";
+    const res = await gh("/repos/" + username + "/" + repoName, token, { method: "PATCH", body: { private: makePrivate } });
+    if (res.ok) { showToast(repoName + " ab " + (makePrivate ? "private" : "public") + " hai.", "ok"); document.getElementById("refreshHostingBtn").click(); }
+    else { showToast("Visibility change fail ho gaya.", "err"); b.disabled = false; b.textContent = original; }
+  }));
+
+  hostList.querySelectorAll(".host-del").forEach(b => b.addEventListener("click", async () => {
+    const repoName = b.getAttribute("data-repo");
+    if (!confirm("Pakka '" + repoName + "' permanently delete karna hai? Ye undo nahi ho sakta.")) return;
+    const res = await gh("/repos/" + username + "/" + repoName, token, { method: "DELETE" });
+    if (res.ok || res.status === 204) { addHistory("Deleted", repoName); showToast("Repo delete ho gaya.", "ok"); document.getElementById("refreshHostingBtn").click(); }
+    else showToast("Delete nahi hua.", "err");
+  }));
+}
+
+</script>
+</body>
+</html>
